@@ -1,0 +1,51 @@
+THINGS NEEDED TO BE DONE!
+-------------------------------------------------------------------------------------------------------------------------
+1. Create skeleton of android app by using the prototype as a guide.
+	Research if multiple .java files are needed or if each page could be a new class.
+-------------------------------------------------------------------------------------------------------------------------
+2. Create database for storing username/password for login. 
+	Could use SQL?
+	Figure out how to add this into AWS-EC2.
+-------------------------------------------------------------------------------------------------------------------------
+3. Make the android application check with the credentials database.
+	When a user creates an account:
+		Android application will connect to the server and access the credentials database.
+		If a user chooses "Sign Up" they will be asked to enter in a username and password.
+		Once a user clicks "Finish", that username and password data will be stored in a new row of the database.
+	PLEASE READ!!!
+		We don't necessairily have to create a sign up page if we are short on time. We can manually add credentials into the credential database and still have the app work.
+		
+	When a user logs in:
+		Application makes a request to AWS-EC2 server and accesses the credentials database and checks whether if the username/password combination is correct.
+			If not, give an incorrect sign and tell them to try again.
+			If successful, move onto next page.
+-------------------------------------------------------------------------------------------------------------------------
+4. Page 3 on the https://xd.adobe.com/view/44e0b7c7-7bec-44e2-aa47-d08aa637be26-11b3/ app is blank. I don't know what goes here.
+-------------------------------------------------------------------------------------------------------------------------
+5. Creating the geo-fence.
+	On the Google Maps API, allow the user to drop 4 pins down on the map.
+		The area of that will become the geo-fence.
+		
+	Application will record the location of the 4 pins dropped.
+	Application will then take the area of that shape and create the geo-fence.
+-------------------------------------------------------------------------------------------------------------------------
+6. Track the smart watch.
+	Top of the screen:
+		Current address where the watch is located.
+		The watch will ping the AWS-EC2 server every few seconds (could change to minutes if that saves data) and display the location in writing.
+		
+	Main portion of the screen:
+		Map API showing the location of the watch.
+		The watch will ping the AWS-EC2 server every few seconds (could change to minutes if that saves data) and display the location on the Google Maps page.
+		
+	NOTE!!!
+		These two parts HAVE to be updated together to accurately display the location of the smart watch.
+-------------------------------------------------------------------------------------------------------------------------
+7. MyPage display
+	"Profile" part of the page:
+		Should ONLY grab the username from the credential database.
+	
+	"Watch Information" part of the page:
+		Should display the unique ID of the watch.
+		Should display the name associated with the watch.
+		Should display the current WatchOS version. Ex: Ver 0.93.1

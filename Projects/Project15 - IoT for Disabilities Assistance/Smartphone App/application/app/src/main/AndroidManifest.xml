@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.smartwatchfordementiapatient">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--for background service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_app_icon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_app_icon_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SmartWatchForDementiaPatient"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".PatientLocate"></activity>
+        <activity android:name=".SignActivity" />
+        <activity android:name=".AddressList" />
+        <activity android:name=".AddressApiActivity" /> <!-- google map api : value has to be changed to each own api value -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC3Uq-L80zXiSi73uTVztL63L_5CSM6Qr8" />
+
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" >
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".LocationRegisterActivity" />
+        <activity android:name=".LocationSettingActivity" />
+        <activity android:name=".MyPageActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <service
+            android:name=".RealService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".RestartService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".AlarmRecever"/>
+
+        <receiver
+            android:name=".RebootReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_location_setting"
+            android:icon="@drawable/ic_edit_location"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:title="location setting"
+            />
+<!--        <item-->
+<!--            android:id="@+id/menu_mypage"-->
+<!--            android:icon="@drawable/ic_person"-->
+<!--            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"-->
+<!--            android:title="my page"-->
+<!--            />-->
+    </group>
+</menu>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <ImageButton
+            android:id="@+id/menu_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu"
+            android:background="@android:color/transparent"
+            android:layout_margin="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Smart Watch \nfor Dementia Patient"
+                android:textAlignment="center"
+                android:textColor="@color/dark_green"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:id="@+id/current_address_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round_square_lightgray"
+                android:padding="10dp"
+                android:layout_margin="20dp"
+                android:textSize="14dp"
+                android:textAlignment="center"
+                android:hint="patient's current address"
+                />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="0,1,2"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Latitude"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView
+                        android:id="@+id/latitude_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_square_lightgray"
+                        android:padding="5dp"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="10dp"
+                        android:layout_span="2"
+                        />
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Longitude"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView
+                        android:id="@+id/longitude_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_round_square_lightgray"
+                        android:padding="5dp"
+                        android:textAlignment="center"
+                        android:layout_span="2"
+                        android:layout_marginBottom="10dp"
+                        />
+                </TableRow>
+            </TableLayout>
+
+        </LinearLayout>
+
+        <!-- google map  -->
+        <fragment
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_below="@id/layout"
+            />
+
+    </RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/activity_navigation_menu"
+        app:menu="@menu/navigation_menu_items" >
+
+        <Button
+            android:id="@+id/logout_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOGOUT"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_round_square_lightgreen"
+            android:layout_gravity="bottom"
+            android:layout_margin="20dp"/>
+    </com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/dark_green">
+
+        <ImageButton
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_arrow"
+            android:background="@android:color/transparent"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MyPage"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:textSize="20dp"
+            android:padding="10dp"
+            />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#328F5B"
+            android:layout_alignParentBottom="true"
+            />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="User Info"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:background="@color/light_gray"/>
+
+            <TextView
+                android:id="@+id/username_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="user name"
+                android:textAlignment="center"
+                android:padding="10dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_round_square_line_lightgreen"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Watch Info"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:background="@color/light_gray"/>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:stretchColumns="0,1">
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ID"
+                        android:padding="5dp"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/watchId_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="watch ID"
+                        android:textAlignment="center"
+                        android:padding="5dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        android:padding="5dp"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/watchName_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="watch name"
+                        android:textAlignment="center"
+                        android:padding="5dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OS version"
+                        android:padding="5dp"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/watchVersion_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="Ver 0.93.1"
+                        android:textAlignment="center"
+                        android:padding="5dp"/>
+                </TableRow>
+            </TableLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</LinearLayout>
