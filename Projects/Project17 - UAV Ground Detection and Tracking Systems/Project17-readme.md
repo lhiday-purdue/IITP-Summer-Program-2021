@@ -4,8 +4,8 @@ Often a forest of trees has many different kinds of trees. In this project, we w
 
 ## Team Members
 ---
-Christian Ekeigwe Purdue University
-Daehyeon Jeong Pusan National University
-Jaeyoung Shim Pusan National University
-Jeonghwan Kang Pusan National University
-Seoungheong Jeong Pusan National University
+Christian Ekeigwe Purdue University  
+Daehyeon Jeong Pusan National University  
+Jaeyoung Shim Pusan National University  
+Jeonghwan Kang Pusan National University  
+Seoungheong Jeong Pusan National University  
