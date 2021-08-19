@@ -36,20 +36,19 @@ public class MainActivity extends AppCompatActivity {
         tv_output2 = (TextView)findViewById(R.id.tv_output2);
 //143.198.112.40 , tcp://test.mosquitto.org:1883
         mqttAndroidClient = new MqttAndroidClient(this,  "tcp://"+"143.198.112.40"+":8883","test");
-        // 2번째 파라메터 : 브로커의 ip 주소 , 3번째 파라메터 : client 의 id를 지정함 여기서는 paho 의 자동으로 id를 만들어주는것
         try {
-            IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());    //mqtttoken 이라는것을 만들어 connect option을 달아줌
+            IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());    //연결에 성공한경우
+                    mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
                     Log.e("Connect_success", "Success");
                     tv_output.setText("Connect_success");
                     tv_output2.setText("Connect_success");
                     try {
-                        mqttAndroidClient.subscribe("myled1", 0 );             //연결에 성공하면 myled1 라는 토픽으로 subscribe함
+                        mqttAndroidClient.subscribe("myled1", 0 );
                         Log.e("subscribe1","myled1");
-                        mqttAndroidClient.subscribe("myled2", 0 );             //연결에 성공하면 myled2 라는 토픽으로 subscribe함
+                        mqttAndroidClient.subscribe("myled2", 0 );
                         Log.e("subscribe2","myled2");
                     } catch (MqttException e) {
                         e.printStackTrace();
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {   //연결에 실패한경우
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.e("connect_fail", "Failure " + exception.toString());
                 }
             });
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    //mqttAndroidClient.publish("soyeonLee", "Hello , my name is soyeon Lee !".getBytes(), 0 , false );
                     //mqttAndroidClient.publish("myled1", "TurnOn".getBytes(), 0 , false );
                     mqttAndroidClient.publish("myled2", "TurnOFF".getBytes(), 0 , false );
                 } catch (MqttException e) {
@@ -81,16 +79,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mqttAndroidClient.setCallback(new MqttCallback() {  //클라이언트의 콜백을 처리하는부분
+        mqttAndroidClient.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
             }
             @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {    //모든 메시지가 올때 Callback method
+            public void messageArrived(String topic, MqttMessage message) throws Exception { 
                 String msg = new String(message.getPayload());
                 Log.e("arrive message ", msg);
 
-                if (topic.equals("myled1")){     //topic 별로 분기처리하여 작업을 수행할수도있음
+                if (topic.equals("myled1")){
                     if(msg.equals("TurnOn"))
                         //tv_ouput.setText("Arrive message : " + msg);
                         tv_output.setText("Turn On myled1");
