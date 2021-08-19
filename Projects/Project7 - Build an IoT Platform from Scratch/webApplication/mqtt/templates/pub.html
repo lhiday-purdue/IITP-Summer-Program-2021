@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        <title>wow</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'ultraman.ico' %}" />
+        <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"
+        ></script>
+        <script>
+            var hostname = 'test.mosquitto.org';
+            var port = 8081;
+            var ClientID = 'whatiwanttomakeClientID_' + parseInt(Math.random() * 100);
+            var client = new Paho.MQTT.Client(hostname, Number(port), ClientID);
+
+            client.onConnectionLost = onConnectionLost;
+            client.onMessageArrived = onMessageArrived;
+
+            client.connect({ onSuccess: onConnect });
+
+            function onConnect() {
+                console.log('onConnect');
+                client.subscribe('myled1');
+                client.subscribe('myled2');
+                client.subscribe('myimage');
+            }
+
+            function onConnectionLost(responseObject) {
+                if (responseObject.errorCode != 0) {
+                    console.log('onConnectionLost:' + responseObject.errorMessage);
+                    client.connect({ onSuccess: onConnect });
+                }
+            }
+
+            async function onMessageArrived(message) {
+                console.log(
+                    'Message arrived: topic=' +
+                        message.destinationName +
+                        ', message=' +
+                        message.payloadString
+                );
+                if(message.destinationName === 'myled1'){
+                    if(message.payloadString === 'TurnON'){
+                        document.getElementById("state1text").innerHTML = "ON";
+                        document.getElementById("led1").checked = true;
+                    }
+                    else if(message.payloadString == 'TurnOFF'){
+                        document.getElementById("state1text").innerHTML = "OFF";
+                        document.getElementById("led1").checked = false;
+                    }
+                }
+                
+                else if(message.destinationName === 'myled2'){
+                    if(message.payloadString === 'TurnON'){
+                        document.getElementById("state2text").innerHTML = "ON";
+                        document.getElementById("led2").checked = true;
+                    }
+                    else if(message.payloadString == 'TurnOFF'){
+                        document.getElementById("state2text").innerHTML = "OFF";
+                        document.getElementById("led2").checked = false;
+                    }
+                }
+                else if(message.destinationName === 'myimage'){
+                    let url = 'https://ultraman.run.goorm.io/api/image/1/';
+                    let response = await fetch(url);
+
+                    let commits = await response.json(); // 응답 본문을 읽고 JSON 형태로 파싱함
+
+                    let text = commits['text'];
+                    let image_url = commits['image'];
+                    console.log(text, image_url);
+                    document.getElementById("imagename").innerHTML = text+" is at the doorway";
+                    document.getElementById("imageid").src=image_url;
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <form method="POST" action="/mqtt/httprequest/">
+            {% csrf_token %}
+            <input type="submit" value="request" />
+        </form>
+        <label id="switch1" class="switch">
+            <span>1st LED</span>
+            <input type="checkbox" id="led1" onclick="publish('state1text', 'myled1')" />
+            <span id="state1text">OFF</span>
+        </label>
+        <br />
+        <label id="switch2" class="switch">
+            <span>2nd LED</span>
+            <input type="checkbox" id="led2" onclick="publish('state2text', 'myled2')" />
+            <span id="state2text">OFF</span>
+        </label>
+        <h1 id="imagename">
+        </h1>
+        <img src="https://ultraman.run.goorm.io/media/black.png" id="imageid">
+        <script>
+            function publish(x, topic) {
+                if (!client) {
+                    return;
+                }
+                var status = document.getElementById(x);
+                console.log(status.innerHTML);
+                if (status.innerHTML == 'ON') {
+                    status.innerHTML = 'OFF';
+                    var message = new Paho.MQTT.Message('TurnOFF');
+                    console.log(topic + 'TurnOFF');
+                    message.destinationName = topic;
+                    client.send(message);
+                } else {
+                    status.innerHTML = 'ON';
+                    var message = new Paho.MQTT.Message('TurnON');
+                    console.log(topic + 'TurnON');
+                    message.destinationName = topic;
+                    client.send(message);
+                }
+            }
+        </script>
+    </body>
+</html>
