@@ -42,10 +42,17 @@ Project 15  - IoT for Disabilities Assistance
  ![image](https://user-images.githubusercontent.com/34156840/130125687-0899713c-dde6-4966-9466-8ff2f931248e.png)
  ### Location Setting
  ![image](https://user-images.githubusercontent.com/34156840/130125982-e335472e-66da-48b2-915a-83d7b02a39f4.png)
+ ### Watch UI (Normal)
+ ![app ui (2)](https://user-images.githubusercontent.com/29995281/130353593-a3282e20-b502-4ac2-9924-ee05a30eb8e4.png)
+ ### Warning Message
+ ![message](https://user-images.githubusercontent.com/29995281/130353604-d3f1c6a2-8e97-452a-8558-1810e3d2a826.png)
+ ### Navigation
+ ![app nav (2)](https://user-images.githubusercontent.com/29995281/130353598-d7d43da8-474a-43b3-ad40-8d1cc784709a.png)
  
 
  
 
  
 * IEEE paper : <https://github.com/ilovethisid/Smart-watch-for-Dementia-patient/blob/main/Safety_Monitoring_System_for_Dementia_Patients_Using_Smart_Watch.pdf>
+* (it is also in this repository)
 * IEEE paper on Overleaf : <https://www.overleaf.com/read/rmtzmgkbszcc>
