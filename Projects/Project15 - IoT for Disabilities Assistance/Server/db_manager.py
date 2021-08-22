@@ -7,7 +7,7 @@ from pymysql.cursors import DictCursor
 from singleton_instance import SingletonInstance
 
 
-class DatabaseManager(SingletonInstance):
+class DatabaseManager:
     connection = None
     cursor = None
     DB_CREDENTIALS = "credentials"
@@ -44,7 +44,9 @@ class DatabaseManager(SingletonInstance):
         print(query, file=sys.stderr)
 
         self.cursor.execute(query)
-        return self.cursor.fetchall()[-1]
+        result_rows = self.cursor.fetchall()
+        if result_rows:
+            return result_rows[-1]
 
     def select_first_element_matches(self, *selecting_columns, match_keyword, finding_column, table_name):
         """Fetch all records which exactly matches 'match_keyword' inside 'column_name' """
@@ -80,6 +82,22 @@ class DatabaseManager(SingletonInstance):
         """
         self.cursor.execute(query)
         print(f"Inserted values {value_str} into columns {column_str} at table {table_name}", file=sys.stderr)
+        self.connection.commit()
+
+    def update_row_matches(self, match_keyword, finding_column, table_name, **update_values):
+#        """Fetch all records with 'filter_keyword' inside 'column_name' """
+        set_str = ""
+        print(update_values, file=sys.stderr)
+        for key, val in update_values.items():
+            set_str += f'{key} = {val}, '
+        set_str = set_str.rstrip(", ")
+        query = f"""
+        UPDATE {table_name} 
+        SET {set_str}
+        WHERE {finding_column} = '{match_keyword}';
+        """
+        print(query, file=sys.stderr)
+        self.cursor.execute(query)
         self.connection.commit()
 
     def get_column_names(self, database, table_name):
@@ -139,3 +157,13 @@ class DatabaseManager(SingletonInstance):
             return result[-1]
         else:
             return "wrong"
+
+    def get_update_locate(self,user_id,latitude,longitude,patient_range,table_name):
+        query=f"""
+            UPDATE {table_name}
+            SET patient_locate_latitude="{latitude}", patient_locate_longitude="{longitude}",patient_range="{patient_range}"
+            WHERE id="{user_id}"
+        """
+        print("asddasdasd",query,file=sys.stderr)
+        self.cursor.execute(query)
+        self.connection.commit()

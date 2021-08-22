@@ -1,17 +1,23 @@
 package com.example.smartwatchfordementiapatient;
-
+// It shows patient's lcoate
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,14 +54,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout drawer_layout;
     private ImageButton menu_btn;
     private Intent serviceIntent;
-
+    static final int SMS_RECEIVE_PERMISSON=1;
     private Button logout_btn;
+    SmsManager sms = SmsManager.getDefault();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("Main",SharedPreference.getAttribute(getApplicationContext(),"id"));
+
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
 
         //google map initial setting
@@ -86,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(),"logout",Toast.LENGTH_SHORT).show();
+                SharedPreference.removeAll(getApplicationContext());
+
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                android.os.Process.killProcess(android.os.Process.myPid()); //kill the Realservice process either
+                finish();
+
             }
         });
 
@@ -107,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        // ignore power shaving mode
         boolean isWhiteListing = false;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             isWhiteListing = pm.isIgnoringBatteryOptimizations(getApplicationContext().getPackageName());
@@ -123,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startService(serviceIntent);
         } else {
             serviceIntent = RealService.serviceIntent;//getInstance().getApplication();
-            Toast.makeText(getApplicationContext(), "already", Toast.LENGTH_LONG).show();
+            startService(serviceIntent);
         }
 
 
@@ -131,18 +146,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
+
     //google map setting
     @Override
     public void onMapReady(GoogleMap googleMap) {
         main_Map = googleMap;
-
-        //latitude, longitude should be changed to patient's current location
-        //location should be get from server db
-//        Toast.makeText(getApplicationContext(),"asdasdasdasd",Toast.LENGTH_SHORT).show();
-//        LatLng seoul = new LatLng(37, 128);
-//        main_Map.addMarker(new MarkerOptions().position(seoul).title("seoul"));
-//        main_Map.moveCamera(CameraUpdateFactory.newLatLng(seoul));
-//        main_Map.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul,14));
 
         current_address_tv.setText("Loading...");
         current_longitude.setText("Loading...");
@@ -152,8 +160,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //geocoder : longtitude, latitude <-> address
     public String getCurrentAddressforPatient( double latitude, double longitude) {
 
-        //지오코더
-        // GPS를 주소로 변환
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         List<Address> addresses;
@@ -161,21 +167,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             addresses = geocoder.getFromLocation(latitude, longitude, 7);
         } catch (IOException ioException) {
-            //네트워크 문제w
+            //network error
             return "geocorder not service";
         } catch (IllegalArgumentException illegalArgumentException) {
-            //Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
             return "wrong gps location";
         }
         if (addresses == null || addresses.size() == 0) {
-            //Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
             return "couldn't search address";
         }
 
         Address address = addresses.get(0);
         String addr=address.getAddressLine(0);
-//        addr=addr.substring(4);
-        //return address.getAddressLine(0).toString()+"\n";
         return addr;
     }
     @Override

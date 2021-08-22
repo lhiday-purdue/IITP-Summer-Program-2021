@@ -11,11 +11,11 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
+//restart Realservice
 public class RestartService extends Service {
     public RestartService() {
     }
-
+    //foreground service code(not dead)
     @Override
     public void onCreate() {
         super.onCreate();

@@ -13,7 +13,7 @@
         android:padding="10dp">
         <TextView
             android:layout_width="wrap_content"
-            android:text="SignUp"
+            android:text="SignIn"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:layout_alignParentBottom="true"
@@ -99,22 +99,22 @@
                 android:layout_margin="10dp"
                 android:hint="01012345678"
                 android:padding="10dp" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Patient register(Patient's ID)"
-                android:textSize="15dp"
-                android:textStyle="bold"
-                android:padding="10dp"/>
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Patient register(Patient's ID)"-->
+<!--                android:textSize="15dp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:padding="10dp"/>-->
 
-            <EditText
-                android:id="@+id/Patient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/bg_round_square_lightgray"
-                android:layout_margin="10dp"
-                android:padding="10dp" />
+<!--            <EditText-->
+<!--                android:id="@+id/Patient"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginRight="20dp"-->
+<!--                android:background="@drawable/bg_round_square_lightgray"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:padding="10dp" />-->
 
             <Button
                 android:id="@+id/signup_btn"

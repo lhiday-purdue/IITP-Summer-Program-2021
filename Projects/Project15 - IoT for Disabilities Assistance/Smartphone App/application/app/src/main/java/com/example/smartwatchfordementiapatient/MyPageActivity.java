@@ -1,5 +1,5 @@
 package com.example.smartwatchfordementiapatient;
-
+// we will not make this page.=> not essential
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

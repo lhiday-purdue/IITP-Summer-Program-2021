@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartWatchForDementiaPatient"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PatientLocate"></activity>
+<!--        <activity android:name=".PatientLocate"></activity>-->
         <activity android:name=".SignActivity" />
         <activity android:name=".AddressList" />
         <activity android:name=".AddressApiActivity" /> <!-- google map api : value has to be changed to each own api value -->

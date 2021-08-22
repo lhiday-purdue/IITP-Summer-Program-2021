@@ -49,7 +49,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+//this page is for location Register
+// It will work in after input user information
 class RequestThread extends Thread {
     @Override
     public void run() {
@@ -57,19 +58,19 @@ class RequestThread extends Thread {
             URL url = new URL("http://13.125.120.0:5000/signup");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             if(urlConnection != null) {
-                urlConnection.setConnectTimeout(10000); // 10초 동안 기다린 후 응답이 없으면 종료
+                urlConnection.setConnectTimeout(10000);
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setRequestProperty("Content-Type", "application/json");
                 urlConnection.setDoInput(true);
                 urlConnection.setChunkedStreamingMode(0);
-                urlConnection.setDoOutput(true); // 데이터 전송
+                urlConnection.setDoOutput(true);
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
                 bw.write(LocationRegisterActivity.jsonb.toString());
                 Log.e("확인",LocationRegisterActivity.jsonb.toString());
                 bw.flush();
                 bw.close();
 
-                //서버 내용 수신 받기
+                //get server data
                 int resCode = urlConnection.getResponseCode();
                 if(resCode == HttpURLConnection.HTTP_OK){
                     BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -78,7 +79,7 @@ class RequestThread extends Thread {
                         line = reader.readLine();
                         if(line == null)
                             break;
-                        Log.d("asdddddddddddd",line);
+                        Log.d("LocationRegisterActivity:getdata",line);
                     }
                     reader.close();
                 }
@@ -97,14 +98,18 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
     private GoogleMap mMap;
     private Button complete_btn;
     private TextView address_tv;
-    private int radius=300; // patinet_range
 
+    private int radius=1000; // patinet_range
 
+    private EditText radius_et;
+    private Button radius_ok_btn;
+    private TextView radius_result;
     private RadioGroup search_radioGroup;
     private RadioButton google;
     private RadioButton daum;
     private String search_setting="google";
 
+    private String range_unit="m";
     private RadioGroup radioGroup;
     private RadioButton radio300;
     private RadioButton radio500;
@@ -125,9 +130,6 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
 
-    // 주소 요청코드 상수 requestCode
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,27 +148,56 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
         google=findViewById(R.id.google_radio);
         daum=findViewById(R.id.daum_radio);
 
+        radius_et=findViewById(R.id.range_et);
+        radius_result=findViewById(R.id.range_tv);
         radio300=findViewById(R.id.radio_300);
         radio500=findViewById(R.id.radio_500);
-        radio1000=findViewById(R.id.radio_1000);
         radioGroup=findViewById(R.id.radiogroup);
         radioGroup.setOnCheckedChangeListener(radioGroupButtonChangeListener);
+
+        radius_ok_btn=findViewById(R.id.ok_btn);
+        radius_ok_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                radius=Integer.parseInt(radius_et.getText().toString());
+                radius_result.setText("Range: "+radius+range_unit);
+
+                if(range_unit=="km"){
+                    radius*=1000; //change km to meter
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selected_latitude, selected_longtitude),13));
+                }
+                else{
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selected_latitude, selected_longtitude),14));
+                }
+
+                mMap.clear();
+                MarkerOptions mOptions = new MarkerOptions();
+                mOptions.position(new LatLng(selected_latitude, selected_longtitude));
+                CircleOptions circle = new CircleOptions().center(new LatLng(selected_latitude, selected_longtitude)) //latitude & longitude of point
+                        .radius(radius)      //radius unit : m
+                        .strokeWidth(0f)  //line width -> 0f = no line
+                        .fillColor(Color.parseColor("#885b9fde")); //background color
+
+                mMap.addMarker(mOptions);
+                mMap.addCircle(circle);
+
+            }
+        });
 
         edit_addr = findViewById(R.id.address_search_et);
         search_btn = findViewById(R.id.search_btn);
         Geocoder geocoder = new Geocoder(this);
         korea_address = findViewById(R.id.korea_search);
 
-        //현재위치 가져오기
+        //get current locate
         gpsTracker = new GpsTracker(getApplicationContext());
         selected_latitude = gpsTracker.getLatitude();
         selected_longtitude= gpsTracker.getLongitude();
-//        Toast.makeText(getApplicationContext(), "현재위치 \n위도 " + selected_longtitude + "\n경도 " + selected_latitude, Toast.LENGTH_LONG).show();
 
         search_btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                if(search_setting=="google"){ //구글 주소 검색
+                if(search_setting=="google"){ //searching locate by google data
                     List<Address> list = null;
                     String str = edit_addr.getText().toString();
                     TextView tv = findViewById(R.id.address_tv);
@@ -178,9 +209,7 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                             Log.e("test", Integer.toString(list.size()));
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Log.e("test", "입출력 오류 - 주소변환시 에러발생");
                         }
-                        Toast.makeText(getApplicationContext(), Integer.toString(list.size()), Toast.LENGTH_SHORT).show();
                         if (list != null) {
                             if (list.size() == 0) {
                                 tv.setText("No Adress information");
@@ -196,25 +225,20 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                                 overridePendingTransition(0, 0);
                                 startActivityForResult(intent,ADDRESS_LIST_SELECTED);
 
-
                             }
 
                         }
                     }
-                }else{ //다음 주소 검색
-                    Log.i("주소설정페이지", "주소입력창 클릭");
+                }else{ //search with daum api (only for korea)
                     int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
                     if(status == NetworkStatus.TYPE_MOBILE || status == NetworkStatus.TYPE_WIFI) {
-
-                        Log.i("주소설정페이지", "주소입력창 클릭");
                         Intent i = new Intent(getApplicationContext(), AddressApiActivity.class);
-                        // 화면전환 애니메이션 없애기
+                        // erase animation
                         overridePendingTransition(0, 0);
-                        // 주소결과
-                        startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
 
+                        startActivityForResult(i, SEARCH_ADDRESS_ACTIVITY);
                     }else {
-                        Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Please Check Network", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -243,7 +267,7 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                     jsonb.put("name", name);
                     jsonb.put("pw", pw);
                     jsonb.put("id",id);
-                    jsonb.put("patient",patient);
+//                    jsonb.put("patient",patient);
                     jsonb.put("phone",phone);
                     jsonb.put("selected_latitude",selected_latitude);
                     jsonb.put("selected_longitude",selected_longtitude);
@@ -279,8 +303,8 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                 mOptions.title("");
                 mMap.clear();
 
-                Double latitude = point.latitude; // 위도
-                Double longitude = point.longitude; // 경도
+                Double latitude = point.latitude; // latitude
+                Double longitude = point.longitude; // longitude
                 selected_latitude=latitude;
                 selected_longtitude=longitude;
                 //change location -> address
@@ -288,12 +312,11 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                 String addr=getCurrentAddress(selected_latitude,selected_longtitude);
                 address_tv.setText(addr);
 
-                // 마커의 스니펫(간단한 텍스트) 설정
+                // marker's snippet
                 mOptions.snippet(latitude + ", " + longitude);
-                // LatLng: 위도 경도 쌍을 나타냄
                 mOptions.position(new LatLng(latitude, longitude));
 
-                // 반경 1KM원
+                // range 1Km
                 CircleOptions circle = new CircleOptions().center(new LatLng(latitude, longitude)) //latitude & longitude of point
                         .radius(radius)      //radius unit : m
                         .strokeWidth(0f)  //line width -> 0f = no line
@@ -312,7 +335,7 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
         mMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul,14));
 
-        // 반경 1KM원
+
         CircleOptions circle = new CircleOptions().center(seoul) //latitude & longitude of point
                 .radius(radius)      //radius unit : m
                 .strokeWidth(0f)  //line width -> 0f = no line
@@ -336,44 +359,12 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
     RadioGroup.OnCheckedChangeListener radioGroupButtonChangeListener = new RadioGroup.OnCheckedChangeListener() {
         @Override public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
             if(i == R.id.radio_300){
-                radius=300;
-                mMap.clear();
-                MarkerOptions mOptions = new MarkerOptions();
-                mOptions.position(new LatLng(selected_latitude, selected_longtitude));
-                CircleOptions circle = new CircleOptions().center(new LatLng(selected_latitude, selected_longtitude)) //latitude & longitude of point
-                        .radius(radius)      //radius unit : m
-                        .strokeWidth(0f)  //line width -> 0f = no line
-                        .fillColor(Color.parseColor("#885b9fde")); //background color
-
-                mMap.addMarker(mOptions);
-                mMap.addCircle(circle);
-                Toast.makeText(getApplicationContext(), "range: 300m", Toast.LENGTH_SHORT).show();
+                //m
+                range_unit="m";
 
             } else if(i == R.id.radio_500){
-                radius=500;
-                mMap.clear();
-                MarkerOptions mOptions = new MarkerOptions();
-                mOptions.position(new LatLng(selected_latitude, selected_longtitude));
-                CircleOptions circle = new CircleOptions().center(new LatLng(selected_latitude, selected_longtitude)) //latitude & longitude of point
-                        .radius(radius)      //radius unit : m
-                        .strokeWidth(0f)  //line width -> 0f = no line
-                        .fillColor(Color.parseColor("#885b9fde")); //background color
-                mMap.addMarker(mOptions);
-                mMap.addCircle(circle);
-                Toast.makeText(getApplicationContext(), "range: 500m", Toast.LENGTH_SHORT).show();
-            }
-            else if(i==R.id.radio_1000){
-                radius=1000;
-                mMap.clear();
-                MarkerOptions mOptions = new MarkerOptions();
-                mOptions.position(new LatLng(selected_latitude, selected_longtitude));
-                CircleOptions circle = new CircleOptions().center(new LatLng(selected_latitude, selected_longtitude)) //latitude & longitude of point
-                        .radius(radius)      //radius unit : m
-                        .strokeWidth(0f)  //line width -> 0f = no line
-                        .fillColor(Color.parseColor("#885b9fde")); //background color
-                mMap.addMarker(mOptions);
-                mMap.addCircle(circle);
-                Toast.makeText(getApplicationContext(), "range: 1km", Toast.LENGTH_SHORT).show();
+               //km
+                range_unit="km";
             }
         }
     };
@@ -382,23 +373,19 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
     //geocoder : longtitude, latitude <-> address
     public String getCurrentAddress( double latitude, double longitude) {
 
-        //지오코더
-        // GPS를 주소로 변환
+        //geocoder
+        // change gps to address
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-
         List<Address> addresses;
-
         try {
             addresses = geocoder.getFromLocation(latitude, longitude, 7);
         } catch (IOException ioException) {
-            //네트워크 문제
+            //network issue
             return "geocorder not service";
         } catch (IllegalArgumentException illegalArgumentException) {
-            //Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
             return "wrong gps location";
         }
         if (addresses == null || addresses.size() == 0) {
-            //Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
             return "couldn't search address";
         }
 
@@ -417,31 +404,31 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
     }
 
     public boolean checkRunTimePermission(){
-        //런타임 퍼미션 처리
-        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
+        //do runtime permission
+        // 1. Check whether user has locate permission
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
 
         if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED && hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED) {
 
-            // 2. 이미 퍼미션을 가지고 있다면
-            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
-            // 3.  위치 값을 가져올 수 있음
+            // 2. If user already has permission
+            // under version 6.0, they have no permission so it's okay
+            // 3.  get location
             return true;
-        } else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
-            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
+        } else {  //2. if user don't allow permission request, then need permission request. Two types(3-1.4-1)
+            // 3-1.  If the user has refused to perform a permission
             if (ActivityCompat.shouldShowRequestPermissionRationale(LocationRegisterActivity.this, REQUIRED_PERMISSIONS[0])) {
 
-                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Toast.makeText(getApplicationContext(), "앱을 사용하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-                // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+                // 3-2. Before proceeding with the request, you need to explain to the user why the permission is required
+                Toast.makeText(getApplicationContext(), "need location permission for using App", Toast.LENGTH_SHORT).show();
+                // 3-3. Request permissioni to user. Result is received by onRequestPermissionResult method.
                 ActivityCompat.requestPermissions(LocationRegisterActivity.this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
                 return true;
 
 
             } else {
-                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+                // 4-1. If the user has never denied a permission, request a permission immediately.
+                // Request permissioni to user. Result is received by onRequestPermissionResult method.
                 ActivityCompat.requestPermissions(LocationRegisterActivity.this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
                 return true;
             }
@@ -452,11 +439,11 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case GPS_ENABLE_REQUEST_CODE:
-            //사용자가 GPS 활성 시켰는지 검사
+            // Check whether user's gps is activated or not
             if (checkLocationServicesStatus()) {
                 if (checkLocationServicesStatus()) {
 
-                    Log.d("@@@", "onActivityResult : GPS 활성화 되있음");
+                    Log.d("@@@", "onActivityResult : GPS activated");
                     return;
                 }
             }
@@ -465,7 +452,7 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                 Geocoder geocoder = new Geocoder(this);
                 if (resultCode == RESULT_OK) {
                     String address = data.getExtras().getString("data");
-                    if (address != null) { // 주소 존재
+                    if (address != null) { // address exist
                         Log.i("test", "data:" + address);
                         edit_addr.setText(address);
                         List<Address> list = null;
@@ -478,7 +465,6 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                             Log.e("test",Integer.toString(list.size()));
                         }catch (IOException e){
                             e.printStackTrace();
-                            Log.e("test","입출력 오류 - 주소변환시 에러발생");
                         }
                         Toast.makeText(getApplicationContext(),Integer.toString(list.size()),Toast.LENGTH_SHORT).show();
                         if(list!=null) {
@@ -525,7 +511,6 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
                             Log.e("test",Integer.toString(list.size()));
                         }catch (IOException e){
                             e.printStackTrace();
-                            Log.e("test","입출력 오류 - 주소변환시 에러발생");
                         }
                         //Toast.makeText(getApplicationContext(),Integer.toString(list.size()),Toast.LENGTH_SHORT).show();
                         if(list!=null) {
@@ -566,10 +551,10 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
 
         if (permsRequestCode == PERMISSIONS_REQUEST_CODE && grandResults.length == REQUIRED_PERMISSIONS.length) {
 
-            // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
+            // if request code is PERMISSIONS_REQUEST_CODE, and requested number of permissions has been received
 
             boolean check_result = true;
-            // 모든 퍼미션을 허용했는지 체크합니다.
+            // Check All permission is allowed
             for (int result : grandResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     check_result = false;
@@ -581,13 +566,13 @@ public class LocationRegisterActivity extends AppCompatActivity implements OnMap
             }
 
             if (!check_result) {
-                // 거부한 퍼미션이 있다면 앱을 사용할 수 없는 이유를 설명해주고 앱을 종료합니다.2 가지 경우가 있습니다.
+                // If denined permission exist, then explain why the app is unavailable and exit the app. Two case is available.
 
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0]) || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
-                    Toast.makeText(getApplicationContext(), "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Permission Denined. Run app again and allow permisison.", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다. ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Permission Denined. Permissions must be allowed in settings (app information). ", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }

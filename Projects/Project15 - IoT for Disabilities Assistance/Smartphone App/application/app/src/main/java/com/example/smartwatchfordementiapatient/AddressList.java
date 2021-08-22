@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+// It is for google address => make a list of address
 public class AddressList extends AppCompatActivity {
 
     @Override
@@ -26,8 +26,8 @@ public class AddressList extends AppCompatActivity {
         final Geocoder geocoder = new Geocoder(this);
         Intent intent = getIntent();
         ArrayList<Locate> locate_data = (ArrayList<Locate>)intent.getSerializableExtra("datalist");
-        Double latitude = locate_data.get(0).getLatitude(); // 위도
-        Double longitude = locate_data.get(0).getLongitude(); // 경도
+        Double latitude = locate_data.get(0).getLatitude(); // latitude
+        Double longitude = locate_data.get(0).getLongitude(); // longitude
 
 
         final TextView tvSelect = findViewById(R.id.tv_select);
@@ -40,7 +40,6 @@ public class AddressList extends AppCompatActivity {
                     30);
         }catch(IOException e){
             e.printStackTrace();
-            Log.e("test","서버 주소 변환 오류");
         }
         List<String> llist = new ArrayList<>();
         if(list!=null){
