@@ -34,9 +34,8 @@ public class MainActivity extends AppCompatActivity {
         button = (Button)findViewById(R.id.button);
         tv_output = (TextView)findViewById(R.id.tv_output);
         tv_output2 = (TextView)findViewById(R.id.tv_output2);
-//143.198.112.40 , tcp://test.mosquitto.org:1883
-        mqttAndroidClient = new MqttAndroidClient(this,  "tcp://"+"143.198.112.40"+":8883","test");
-                try {
+        mqttAndroidClient = new MqttAndroidClient(this,  "tcp://"+"143.198.112.40"+":8883",MqttClient.generateClientId());
+        try {
             IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
             token.setActionCallback(new IMqttActionListener() {
                 @Override
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                     tv_output.setText("Connect_success");
                     tv_output2.setText("Connect_success");
                     try {
-                        mqttAndroidClient.subscribe("myled1", 0 ); 
+                        mqttAndroidClient.subscribe("myled1", 0 );
                         Log.e("subscribe1","myled1");
                         mqttAndroidClient.subscribe("myled2", 0 );
                         Log.e("subscribe2","myled2");
@@ -71,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    //mqttAndroidClient.publish("soyeonLee", "Hello , my name is soyeon Lee !".getBytes(), 0 , false );
                     //mqttAndroidClient.publish("myled1", "TurnOn".getBytes(), 0 , false );
                     mqttAndroidClient.publish("myled2", "TurnOFF".getBytes(), 0 , false );
                 } catch (MqttException e) {

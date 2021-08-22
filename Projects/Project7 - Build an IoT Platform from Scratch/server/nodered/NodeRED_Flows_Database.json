@@ -1,0 +1,437 @@
+[
+    {
+        "id": "6391b8e618b28529",
+        "type": "tab",
+        "label": "플로우 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "af3a0d22bd56408b",
+        "type": "mqtt in",
+        "z": "6391b8e618b28529",
+        "name": "LED2",
+        "topic": "project7/ledTime2",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "37916f4c29f0ae6e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 90,
+        "y": 100,
+        "wires": [
+            [
+                "c39bfd571d07ef95"
+            ]
+        ]
+    },
+    {
+        "id": "2423d7a046ab4e69",
+        "type": "mqtt in",
+        "z": "6391b8e618b28529",
+        "name": "LED1",
+        "topic": "project7/ledTime1",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "37916f4c29f0ae6e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 90,
+        "y": 40,
+        "wires": [
+            [
+                "0df01f94f48dc97c"
+            ]
+        ]
+    },
+    {
+        "id": "c39bfd571d07ef95",
+        "type": "function",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "func": "msg.topic = \"INSERT INTO `Project7_Database`.`LED2_On_Time` (`time`) VALUE (\"+msg.payload+\")\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 100,
+        "wires": [
+            [
+                "0ad06de91dc9e0e0"
+            ]
+        ]
+    },
+    {
+        "id": "0df01f94f48dc97c",
+        "type": "function",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "func": "msg.topic = \"INSERT INTO `Project7_Database`.`LED1_On_Time` (`time`) VALUE (\"+msg.payload+\")\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 40,
+        "wires": [
+            [
+                "8ef93c703d41929e"
+            ]
+        ]
+    },
+    {
+        "id": "0ad06de91dc9e0e0",
+        "type": "mysql",
+        "z": "6391b8e618b28529",
+        "mydb": "591e71f86e8122e6",
+        "name": "DB",
+        "x": 400,
+        "y": 100,
+        "wires": [
+            [
+                "60b6f157026a49f9"
+            ]
+        ]
+    },
+    {
+        "id": "8ef93c703d41929e",
+        "type": "mysql",
+        "z": "6391b8e618b28529",
+        "mydb": "591e71f86e8122e6",
+        "name": "DB",
+        "x": 400,
+        "y": 40,
+        "wires": [
+            [
+                "fbc21d076416b765"
+            ]
+        ]
+    },
+    {
+        "id": "60b6f157026a49f9",
+        "type": "debug",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "fbc21d076416b765",
+        "type": "debug",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "728faa44729eabcf",
+        "type": "mqtt in",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "topic": "dht22_temp",
+        "qos": "1",
+        "datatype": "utf8",
+        "broker": "6434717d743dbba6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 200,
+        "wires": [
+            [
+                "6c1c9a0f498ea975"
+            ]
+        ]
+    },
+    {
+        "id": "e1a5ae2262ea0b5f",
+        "type": "mqtt in",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "topic": "dht22_hum",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "6434717d743dbba6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 360,
+        "wires": [
+            [
+                "5ee4e980087a7d39"
+            ]
+        ]
+    },
+    {
+        "id": "e6f5ca56346bce2a",
+        "type": "ui_gauge",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "group": "0ce2dcd88e50e398",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "temperature",
+        "label": "*C",
+        "format": "{{value}}",
+        "min": "-10",
+        "max": "30",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "10",
+        "seg2": "20",
+        "x": 530,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "5e1abdb7bcff0cbd",
+        "type": "ui_gauge",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "group": "0ce2dcd88e50e398",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Humidity",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "30",
+        "seg2": "60",
+        "x": 520,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "6c1c9a0f498ea975",
+        "type": "function",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "func": "var newMsg = {payload:parseFloat(msg.payload).toFixed(2)}\nnewMsg.topic = \"INSERT INTO `Project7_Database`.`Temperature` (`temp`) VALUE (\"+newMsg.payload+\")\";\n\nreturn newMsg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 200,
+        "wires": [
+            [
+                "9a221ede49e5dd51",
+                "e6f5ca56346bce2a"
+            ]
+        ]
+    },
+    {
+        "id": "5ee4e980087a7d39",
+        "type": "function",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "func": "var newMsg = {payload:parseFloat(msg.payload).toFixed(2)}\nnewMsg.topic = \"INSERT INTO `Project7_Database`.`Humidity` (`hum`) VALUE (\"+newMsg.payload+\")\";\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 360,
+        "wires": [
+            [
+                "5e1abdb7bcff0cbd",
+                "eeda23ddfa016fbc"
+            ]
+        ]
+    },
+    {
+        "id": "7764dc9fbf786a69",
+        "type": "debug",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "0c341befe2ef94de",
+        "type": "debug",
+        "z": "6391b8e618b28529",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "9a221ede49e5dd51",
+        "type": "mysql",
+        "z": "6391b8e618b28529",
+        "mydb": "591e71f86e8122e6",
+        "name": "DB",
+        "x": 510,
+        "y": 220,
+        "wires": [
+            [
+                "7764dc9fbf786a69"
+            ]
+        ]
+    },
+    {
+        "id": "eeda23ddfa016fbc",
+        "type": "mysql",
+        "z": "6391b8e618b28529",
+        "mydb": "591e71f86e8122e6",
+        "name": "DB",
+        "x": 510,
+        "y": 380,
+        "wires": [
+            [
+                "0c341befe2ef94de"
+            ]
+        ]
+    },
+    {
+        "id": "37916f4c29f0ae6e",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "143.198.112.40",
+        "port": "8883",
+        "tls": "2d8eef2943a8b053",
+        "clientid": "NodeTestClient",
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "project7/notice",
+        "birthQos": "0",
+        "birthPayload": "NodeRed Connected.",
+        "birthMsg": {},
+        "closeTopic": "project7/notice",
+        "closeQos": "0",
+        "closePayload": "NodeRed Disconnected.",
+        "closeMsg": {},
+        "willTopic": "project7/notice",
+        "willQos": "0",
+        "willPayload": "NodeRed unexpected Disconnected.",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "591e71f86e8122e6",
+        "type": "MySQLdatabase",
+        "name": "DB",
+        "host": "143.198.112.40",
+        "port": "3306",
+        "db": "Project7_Database",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "6434717d743dbba6",
+        "type": "mqtt-broker",
+        "name": "root",
+        "broker": "143.198.112.40",
+        "port": "8883",
+        "tls": "2d8eef2943a8b053",
+        "clientid": "root",
+        "usetls": true,
+        "protocolVersion": "3",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "0ce2dcd88e50e398",
+        "type": "ui_group",
+        "name": "DHT22",
+        "tab": "af679b60c1ebd8db",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "2d8eef2943a8b053",
+        "type": "tls-config",
+        "name": "server7",
+        "cert": "/etc/mosquitto/certs/server.crt",
+        "key": "nothing",
+        "ca": "/etc/mosquitto/ca_certificates/ca.crt",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "143.198.112.40",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    },
+    {
+        "id": "af679b60c1ebd8db",
+        "type": "ui_tab",
+        "name": "Sensors",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
