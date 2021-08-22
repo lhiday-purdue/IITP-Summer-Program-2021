@@ -29,11 +29,13 @@ import android.os.ResultReceiver;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,22 +48,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+
 import java.net.URL;
-import java.net.UnknownHostException;
 
 /**
  * Getting the Location Address.
@@ -80,6 +74,8 @@ import java.net.UnknownHostException;
  *
  * For an example that shows location updates using the Fused Location Provider API, see
  * https://github.com/googlesamples/android-play-location/tree/master/LocationUpdates.
+ *
+ * - description of sample (Getting the Location Address) in Android Studio
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -100,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
      * Represents a geographical location.
      */
     private Location mLastLocation;
+    private Location home = new Location("");
 
     /**
      * Tracks whether the user has requested an address. Becomes true when the user requests an
@@ -133,10 +130,18 @@ public class MainActivity extends AppCompatActivity {
      * Kicks off the request to fetch an address when pressed.
      */
 
+    boolean nav_on = false;
+    boolean patient_away = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.title_layout);
+        TextView textViewTitle = (TextView) findViewById(R.id.app_title);
+        textViewTitle.setText(R.string.app_name);
 
         mResultReceiver = new AddressResultReceiver(new Handler());
 
@@ -155,21 +160,20 @@ public class MainActivity extends AppCompatActivity {
         updateUIWidgets();
 
         handler.post(runnable);
+        // runs background operation
     }
 
-    void test_server() {
+    void connect_server() {
         JSONObject postData = new JSONObject();
         try {
             postData.put("latitude", Double.toString(mLastLocation.getLatitude()));
             postData.put("longitude", Double.toString(mLastLocation.getLongitude()));
+            postData.put("id", "namhyo01");
 
             Log.d(TAG,"sended request");
-            Log.d(TAG,postData.toString());
+            Log.d(TAG, postData.toString());
 
-            String latitude = Double.toString(mLastLocation.getLatitude());
-            String longitude = Double.toString(mLastLocation.getLongitude());
-
-            String url = "http://3.35.149.182:5000/append-location";
+            String url = "http://13.125.120.0:5000/append-location";
 
             new SendDeviceDetails().execute(url, postData.toString());
         } catch (JSONException e) {
@@ -191,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setRequestProperty("Content-Type","application/json; utf-8");
                 httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
 
                 BufferedWriter bw = new BufferedWriter(new
                         OutputStreamWriter(httpURLConnection.getOutputStream()));
@@ -216,6 +221,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            try {
+                Log.d("response code", String.valueOf(httpURLConnection.getResponseCode()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return data;
         }
 
@@ -223,7 +234,44 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             Log.d("Result from server", result); // this is expecting a response code to be sent from your server upon receiving the POST data
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                String latitude = jsonObject.getString("latitude");
+                String longitude = jsonObject.getString("longitude");
+                home.setLatitude(Double.parseDouble(latitude));
+                home.setLongitude(Double.parseDouble(longitude));
+                // get location of patient home
+
+                if(jsonObject.getString("is_patient_away").equals("false")) {
+                    patient_away = false;
+                }
+                else if(jsonObject.getString("is_patient_away").equals("true")) {
+                    patient_away = true;
+                }
+
+                if(!nav_on && patient_away) {
+                    setNavigation();
+                }
+                if(!patient_away) {
+                    nav_on = false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private void setNavigation() {
+        String latitude = Double.toString(mLastLocation.getLatitude());
+        String longitude = Double.toString(mLastLocation.getLongitude());
+
+        Uri navigationIntentUri = Uri.parse("google.navigation:q=" + home.getLatitude() +"," + home.getLongitude());
+        //creating intent with latitude & longitude
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, navigationIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+
+        nav_on = true;
     }
 
     @Override
@@ -235,8 +283,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getAddress();
         }
-
-//        Log.d(TAG,getLocalMacAddress());
     }
 
     /**
@@ -262,9 +308,9 @@ public class MainActivity extends AppCompatActivity {
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
+            handler.postDelayed(this, 5000);
 
-
-            handler.postDelayed(this, 1000);
+            getAddress();
 
             if (mLastLocation != null) {
                 startIntentService();
@@ -273,11 +319,6 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("Handlers", "Called on main thread");
 
-
-
-            // If we have not yet retrieved the user location, we process the user's request by setting
-            // mAddressRequested to true. As far as the user is concerned, pressing the Fetch Address button
-            // immediately kicks off the process of getting the address.
             mAddressRequested = true;
             updateUIWidgets();
         }
@@ -299,12 +340,10 @@ public class MainActivity extends AppCompatActivity {
         mLatitudeText.setText(Double.toString(mLastLocation.getLatitude()));
         mLongitudeText.setText(Double.toString(mLastLocation.getLongitude()));
 
-
-
         mLatitudeText.invalidate();
         mLongitudeText.invalidate();
 
-        test_server();
+        connect_server();
 
         // Pass the result receiver as an extra to the service.
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
@@ -327,22 +366,19 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        if (location == null) {
-                            Log.w(TAG, "onSuccess:null");
+                                if (location == null) {
+                                    Log.w(TAG, "onSuccess:null");
+                                    return;
+                                }
+
+                                mLastLocation = location;
+
+                                // Determine whether a Geocoder is available.
+                                if (!Geocoder.isPresent()) {
+                                    showSnackbar(getString(R.string.no_geocoder_available));
                             return;
                         }
 
-                        mLastLocation = location;
-
-                        // Determine whether a Geocoder is available.
-                        if (!Geocoder.isPresent()) {
-                            showSnackbar(getString(R.string.no_geocoder_available));
-                            return;
-                        }
-
-                        // If the user pressed the fetch address button before we had the location,
-                        // this will be set to true indicating that we should kick off the intent
-                        // service after fetching the location.
                         if (mAddressRequested) {
                             startIntentService();
                         }
@@ -357,45 +393,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * method to get local MAC address
-     *
-     * Created by 닢향
-     * http://niphyang.tistory.com
-     */
-    public String getLocalMacAddress() {
-        String result = "";
-        InetAddress ip;
-
-        try {
-            ip = InetAddress.getLocalHost();
-
-            NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-            byte[] mac = network.getHardwareAddress();
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mac.length; i++) {
-                sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-            }
-            result = sb.toString();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (SocketException e){
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    /**
      * Updates the address in the UI.
      */
     private void displayAddressOutput() {
         mLocationAddressTextView.setText(mAddressOutput);
     }
 
-    /**
-     * Toggles the visibility of the progress bar. Enables or disables the Fetch Address button.
-     */
     private void updateUIWidgets() {
         if (mAddressRequested) {
             mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -439,7 +442,6 @@ public class MainActivity extends AppCompatActivity {
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             displayAddressOutput();
 
-            // Reset. Enable the Fetch Address button and stop showing the progress bar.
             mAddressRequested = false;
             updateUIWidgets();
         }
