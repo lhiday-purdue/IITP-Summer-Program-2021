@@ -4,8 +4,8 @@ The ability to find and track entities on the ground from a small, class 1 UAV h
 
 ## Team Members  
 Xiaxin Shen -Purdue University  
-Haeun Ko -Chung-Ang University
-Taeuk Gwak -Chung-Ang University
-Jihyeon Noh -Chung-Ang University
-Yeji Gong -Chung-Ang University
-Hyonjun Kang -Chung-Ang University
+Haeun Ko -Chung-Ang University  
+Taeuk Gwak -Chung-Ang University  
+Jihyeon Noh -Chung-Ang University  
+Yeji Gong -Chung-Ang University  
+Hyonjun Kang -Chung-Ang University  
