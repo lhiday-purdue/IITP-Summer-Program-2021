@@ -12,7 +12,7 @@ Project 15  - IoT for Disabilities Assistance
 
 ------------------
 
-
+**for further information about the project, check our IEEE paper in this repository*
 
 #### Team Members
 
@@ -30,7 +30,7 @@ Project 15  - IoT for Disabilities Assistance
   
   Bohyun Kim (Chung-Ang University)
   
-  *for further information about the project, check our IEEE paper in this repository
+ 
   
  ---------------
  ## Running App
