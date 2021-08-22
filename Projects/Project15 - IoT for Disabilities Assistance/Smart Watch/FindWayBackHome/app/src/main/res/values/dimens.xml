@@ -5,5 +5,6 @@
     <dimen name="activity_top_margin">48dp</dimen>
 
     <dimen name="default_text_size">16sp</dimen>
-    <dimen name="text_margin_top">40dp</dimen>
+    <dimen name="title_text_size">18sp</dimen>
+    <dimen name="text_margin_top">20dp</dimen>
 </resources>

@@ -21,8 +21,8 @@ limitations under the License.
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-feature android:name="android.hardware.type.watch"/>
 
     <application
@@ -37,8 +37,6 @@ limitations under the License.
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

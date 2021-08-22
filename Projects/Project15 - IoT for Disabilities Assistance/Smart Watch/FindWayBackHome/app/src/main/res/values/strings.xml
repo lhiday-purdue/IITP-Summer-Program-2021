@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <resources>
-    <string name="app_name">Watch for Dementia</string>
+    <string name="app_name">Find Way Back Home</string>
 
     <string name="no_geocoder_available">No geocoder available</string>
 
