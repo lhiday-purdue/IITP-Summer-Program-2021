@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/our" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="This is the test screen for project_9. I sincerely thank you for your hard work over the past seven weeks. Professors at Purdue University, Minji Lee, Sean Gomez and team members, Officer of the PNU. It was a tough time, but it was a worthwhile time.
+I hope everyone will be happy."
+        android:textSize="22dp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/sang">
+
+    </TextView>
+
+
+
+</RelativeLayout>
