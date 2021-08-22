@@ -3,7 +3,7 @@
 IITP Summer Program 2021
 Project 15  - IoT for Disabilities Assistance
 ## Project Goal
-### To prevent dememtia patient from getting lost, our system can tracking with a warning if the patient gets far away. Watch tracks dementia patient with its GPS feature and sends them to server. Smartphone gets data from the server and warns caregivers if the patient gets far from home.
+### To prevent dememtia patient from getting lost, our system can track patient and warn if the patient gets far away. Watch tracks dementia patient with its GPS feature and sends location data to server. Smartphone gets data from the server and warns caregivers if the patient gets out from the boundary.
 
 -----------------
 ## Project Novelty
