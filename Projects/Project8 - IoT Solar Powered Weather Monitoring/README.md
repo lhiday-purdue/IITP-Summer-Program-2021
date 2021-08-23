@@ -1,15 +1,15 @@
-# Project8 - IoT Environmental Monitoring System Using LoRaWAN, 
+# Project8 - IoT Environmental Monitoring System Using LoRaWAN, MQTT and Node-RED
 IITP Summer Program 2021 Project 8
 
 ## Team Members
 - Hyemin Lim (Chung-Ang University)
-- Sugnho Lee (Chung-Ang University)
+- Sungho Lee (Chung-Ang University)
 - Daniel Anselm (Purdue University)
 - Gaeun Kim (Chung-Ang University)
 - Juyeon Jung (Chung-Ang University)
 
 ## Project Goal
-This project aims to build a environment monitoring system that can be operated in large farmland using following technologies.
+This project aims to build a environmental monitoring system that can be operated in large farmland using following technologies.
 
 - LoRa and LoRaWAN - Enables secure, long-range data transmission that consumes low engergy.
 - MQTT - Relays stream of data between a LoRaWAN network server and a Node-RED-based cloud platform.
